@@ -1,2 +1,29 @@
 # SES_EventViewer
-This tool is created to help SES to verify the Metadata from both HE DCG and DCH via API response coming in JSON format into Tabular format with search feasibility. Features it has are as following:  tables side-by-side; Unified search; Clean &amp; exportable Excel; Auto load on page open
+# JSON to Excel Viewer for MediaKind Events
+
+This is a simple web tool that fetches event data from MediaKind's DCG and DCH regions, displays it in a searchable table, and allows exporting to Excel.
+
+## 🔧 Features
+
+- Fetch live JSON data from two MediaKind API endpoints.
+- Display as searchable HTML tables.
+- Export DCG & DCH tables to `.xlsx` format.
+- Fully browser-based (no backend required).
+
+## 📁 How to Use
+
+1. Clone this repository or [download the ZIP](https://github.com/your-username/json-to-excel-viewer/archive/refs/heads/main.zip).
+2. Open `index.html` in any browser.
+3. The data loads automatically and updates the view.
+
+## 🔍 Search
+
+Use the search bar to filter events across both regions.
+
+## 📤 Export
+
+Click the "Export to Excel" button for either region to save the data.
+
+---
+
+Built using plain HTML, JavaScript.
