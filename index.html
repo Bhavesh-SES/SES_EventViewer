@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MK Events Viewer - DCG & DCH</title>
+  <title>MK EAE Response Viewer - DCG & DCH</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
+      margin: 2px;
     }
     input#searchBox {
-      width: 100%;
+      width: 35%;
       padding: 10px;
       margin-bottom: 20px;
       font-size: 16px;
@@ -21,9 +21,9 @@
       font-size: 14px;
     }
     th, td {
-      border: 1px solid #ccc;
+      border: 2px solid #ccc;
       padding: 6px 8px;
-      text-align: left;
+      text-align: center;
     }
     th {
       background-color: #f5f5f5;
@@ -46,6 +46,7 @@
     }
     button {
       padding: 6px 12px;
+      background-color: #e7e7e7;
       margin: 5px 0;
       cursor: pointer;
     }
@@ -53,14 +54,14 @@
 </head>
 <body>
 
-  <h2>📡 MediaKind Events Viewer (DCG & DCH)</h2>
+  <h2>📡 MK EAE Response Viewer - DCG & DCH</h2>
   <input type="text" id="searchBox" placeholder="🔍 Search in both regions..." onkeyup="searchAll()">
 
   <div class="region-wrapper">
     <div class="region-container">
       <div class="header-row">
         <h3>📍 DCG</h3>
-        <button onclick="exportToExcel('dcg')">⬇ Export DCG</button>
+        <button onclick="exportToExcel('dcg')">⬇️📄 Export DCG</button>
       </div>
       <div id="dcgContainer">Loading DCG...</div>
     </div>
@@ -68,7 +69,7 @@
     <div class="region-container">
       <div class="header-row">
         <h3>📍 DCH</h3>
-        <button onclick="exportToExcel('dch')">⬇ Export DCH</button>
+        <button onclick="exportToExcel('dch')">⬇️📄 Export DCH</button>
       </div>
       <div id="dchContainer">Loading DCH...</div>
     </div>
@@ -127,20 +128,20 @@
         });
 
         return {
-          oaId: e.oaId || "",
-          overrideId: e.overrideId?.[0]?.id || "",
-          streamStartTime: e.streamStartTime || "",
-          streamEndTime: e.streamEndTime || "",
-          heEventTypeName: e.heEventTypeName || "",
-          drmRequired: e.drmRequired || false,
-          regions: Array.isArray(e.regions) ? e.regions.join(", ") : "",
-          description: (e.description || "").replace(/<br\s*\/?>/gi, " ").slice(0, 150),
+          OAID: e.oaId || "",
+          OverRide_Id: e.overrideId?.[0]?.id || "",
+          Stream_StartTime: e.streamStartTime || "",
+          Stream_EndTime: e.streamEndTime || "",
+          HeEvent_TypeName: e.heEventTypeName || "",
+          DRM_Required: e.drmRequired || false,
+          Regions: Array.isArray(e.regions) ? e.regions.join(", ") : "",
+          Description: (e.description || "").replace(/<br\s*\/?>/gi, " ").slice(0, 150),
           heResilience: e.heResilience || "",
-          competitionId: e.competitionId || "",
-          closedCaptioning: Array.isArray(e.closedCaptioning) ? e.closedCaptioning.join(", ") : (e.closedCaptioning || ""),
+          Competition_Id: e.competitionId || "",
+          Closed_Captioning: Array.isArray(e.closedCaptioning) ? e.closedCaptioning.join(", ") : (e.closedCaptioning || ""),
           inProgress: e.inProgress || false,
-          sources: sources.join(", "),
-          destinations: destinations.join(", ")
+          Sources: sources.join(", "),
+          Destinations: destinations.join(", ")
         };
       });
     }
