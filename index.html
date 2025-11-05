@@ -565,21 +565,48 @@
                 return {
                     OAID: e.oaId || '',
                     OverRide_Id: e.overrideId?.[0]?.id || '',
+
+                    // existing times
                     Stream_StartTime: e.streamStartTime || '',
                     Stream_EndTime: e.streamEndTime || '',
-                    HeEvent_TypeName: e.heEventTypeName || '',
+                    HeEventType_Name: e.heEventTypeName || '',
                     DRM_Required: e.drmRequired || false,
+
+                    // basic + top-level fields
+                    Description: (e.description || '').replace(/<br\s*\/?>/gi, ' ').trim(),
+                    HeResilience: e.heResilience || '',
+                    Watermarking: e.watermarking || '',
+                    CompetitionId: e.competitionId || '',
+                    ClosedCaptioning: Array.isArray(e.closedCaptioning) ? JSON.stringify(e.closedCaptioning, null, 2) : (e.closedCaptioning ? JSON.stringify(e.closedCaptioning) : ''),
+
+                    // flags / booleans
+                    Multigame: ('multigame' in e) ? String(e.multigame) : '',
+                    InProgress: ('inProgress' in e) ? String(e.inProgress) : '',
+
+                    // broadcast-level / channel-level fallback values
+                    Calculated_StartTime: broadcast?.calculatedStartTime || '',
+                    Calculated_StopTime: broadcast?.calculatedStopTime || '',
+                    Deleted: (broadcast?.deleted != null) ? String(broadcast.deleted) : '',
+                    Live2Vod: (broadcast?.live2Vod != null) ? String(broadcast.live2Vod) : '',
+                    Quality_Level: broadcast?.qualityLevel || '',
+                    Dolby_Enabled: (broadcast?.dolbyEnabled != null) ? String(broadcast.dolbyEnabled) : '',
+                    Output_SuppressionMode: broadcast?.outputSuppressionMode || (channel?.instances?.[0]?.outputSuppressionMode) || '',
+
+                    // arrays and nested objects as RAW JSON (pretty, verbose)
+                    Audio_Config: e.audioConfig ? JSON.stringify(e.audioConfig, null, 2) : (broadcast?.audioConfig ? JSON.stringify(broadcast.audioConfig, null, 2) : ''),
+                    Dolby_Config: e.dolbyConfig ? JSON.stringify(e.dolbyConfig, null, 2) : (broadcast?.dolbyConfig ? JSON.stringify(broadcast.dolbyConfig, null, 2) : ''),
+                    Recordings: (broadcast?.recordings !== undefined) ? JSON.stringify(broadcast.recordings, null, 2) : (e.recordings !== undefined ? JSON.stringify(e.recordings, null, 2) : ''),
+
+                    // keep existing fields (regions, sources, destinations)
                     Regions: Array.isArray(e.regions) ? e.regions.join(', ') : (e.regions || ''),
-                    Description: (e.description || '').replace(/<br\s*\/?>/gi, ' ').slice(0, 150),
-                    heResilience: e.heResilience || '',
-                    Competition_Id: e.competitionId || '',
-                    Closed_Captioning: Array.isArray(e.closedCaptioning) ? e.closedCaptioning.join(', ') : (e.closedCaptioning || ''),
-                    inProgress: e.inProgress || false,
-                    Sources: sources.join(', '),
-                    Destinations: destinations.join(', '),
+                    Sources: instances.map(inst => (inst.sources || []).map(s => s.sourceId || '').join('; ')).filter(Boolean).join(' | '),
+                    Destinations: instances.map(inst => (inst.destinations || []).map(d => d.assetName || d.type || '').join('; ')).filter(Boolean).join(' | '),
+
+                    // keep raw event for modal
                     _rawEvent: e,
                     _broadcast: broadcast
                 };
+
             });
         }
 
@@ -690,10 +717,24 @@
                 html += `<tr data-index="${idx}" data-oa="${escapeHtml(row.OAID)}">`;
                 html += `<td><input class="row-select" data-headend="${headend}" data-idx="${idx}" type="checkbox"${checked}></td>`;
                 keys.forEach(k => {
-                    const val = (typeof row[k] === 'boolean' || typeof row[k] === 'number') ? String(row[k]) : (row[k] || '');
+                    // raw value (string/number/boolean)
+                    const rawVal = (typeof row[k] === 'boolean' || typeof row[k] === 'number') ? String(row[k]) : (row[k] || '');
                     const q = document.getElementById('searchBox').value.trim();
-                    html += `<td data-key="${k}">${highlightMatch(val, q)}</td>`;
+
+                    // detect raw JSON-looking string (starts with { or [) — we stored pretty JSON via stringify(...) earlier
+                    const isJson = typeof rawVal === 'string' && rawVal.trim().length > 0 && (/^[\{\[]/.test(rawVal.trim()));
+
+                    if (isJson) {
+                        // show as pretty block; escape HTML inside
+                        const escaped = escapeHtml(rawVal);
+                        // highlight search inside JSON as well (simple replace on escaped text)
+                        const highlighted = q ? escaped.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'ig'), (m) => `<mark>${m}</mark>`) : escaped;
+                        html += `<td data-key="${k}"><pre style="margin:0;white-space:pre-wrap;word-break:break-all;">${highlighted}</pre></td>`;
+                    } else {
+                        html += `<td data-key="${k}">${highlightMatch(rawVal, q)}</td>`;
+                    }
                 });
+
                 html += `</tr>`;
             });
 
@@ -1272,5 +1313,4 @@
 
     </script>
 </body>
-
 </html>
